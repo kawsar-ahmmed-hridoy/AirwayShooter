@@ -1,6 +1,7 @@
 package com.mygdx.game.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -33,6 +34,7 @@ public class HomeScreen {
     private static final int AstHeight = 20;
     private Asteroid[] asteroids;
     private ArrayList<FireEffect> fireEffects;
+    private Music startupMusic;
 
     public HomeScreen() {
         stage = new Stage(new ScreenViewport());
@@ -49,6 +51,11 @@ public class HomeScreen {
         startTime = TimeUtils.millis();
         count = 1;
         menu = false;
+
+        // Loading && playing startup music.
+        startupMusic = Gdx.audio.newMusic(Gdx.files.internal("startup.mp3"));
+        startupMusic.setLooping(false);
+        startupMusic.play();
 
         // Creating asteroids
         asteroids = new Asteroid[AstNum];
@@ -100,7 +107,7 @@ public class HomeScreen {
         float textWidth = font.getRegion().getRegionWidth() * font.getData().scaleX;
         float textHeight = font.getRegion().getRegionHeight() * font.getData().scaleY;
         float textX = (Gdx.graphics.getWidth() - textWidth + 100) / 2;
-        float textY = (Gdx.graphics.getHeight() + textHeight -650) / 2;
+        float textY = (Gdx.graphics.getHeight() + textHeight - 650) / 2;
 
         font.draw(batch, loadingText, textX, textY);
         batch.end();
@@ -118,6 +125,7 @@ public class HomeScreen {
         if (count > 100 && !menu) {
             menu = true;
             menuVisible(true);
+            startupMusic.stop();
         }
     }
 
@@ -129,7 +137,7 @@ public class HomeScreen {
         stage.draw();
     }
 
-    private void menuVisible(boolean flag ) {
+    private void menuVisible(boolean flag) {
         backgroundImage.setVisible(flag);
         // For others visibility.
     }
@@ -142,6 +150,7 @@ public class HomeScreen {
         fireTexture.dispose();
         font.dispose();
         batch.dispose();
+        startupMusic.dispose();
     }
 
     private class Asteroid {
