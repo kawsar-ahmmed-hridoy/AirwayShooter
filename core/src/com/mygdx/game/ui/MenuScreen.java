@@ -13,7 +13,8 @@ public class MenuScreen {
     private final Image instructionImage;
     private final Image musicButton;
     private boolean musicOn;
-    public MenuScreen(Stage stage){
+
+    public MenuScreen(Stage stage) {
         this.stage = stage;
 
         //Creating MenuBackground.
@@ -50,7 +51,7 @@ public class MenuScreen {
         rocketButtons[2].setPosition(127, 80);
         rocketButtons[3] = new Image(rocket4Texture);
         rocketButtons[3].setPosition(127, 215);
-        for(int i=0;i<4;i++){
+        for (int i = 0; i < 4; i++) {
             rocketButtons[i].setWidth(40);
             rocketButtons[i].setHeight(40);
         }
@@ -91,33 +92,33 @@ public class MenuScreen {
         instructionImage.setVisible(false);//Initially not shown.
         stage.addActor(instructionImage);
 
-        instructionButton.addListener(new ClickListener(){
+        instructionButton.addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y){
+            public void clicked(InputEvent event, float x, float y) {
                 instructionImage.setVisible(!instructionImage.isVisible());
             }
         });
 
-        exitButton.addListener(new ClickListener(){
+        exitButton.addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y){
+            public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
             }
         });
 
-        musicButton.addListener(new ClickListener(){
+        musicButton.addListener(new ClickListener() {
             @Override
-            public void clicked(InputEvent event, float x, float y){
+            public void clicked(InputEvent event, float x, float y) {
                 toggleMusic();
             }
         });
     }
 
-    private void toggleMusic(){
-        if(musicOn){
+    private void toggleMusic() {
+        if (musicOn) {
             musicButton.setDrawable(new Image(new Texture(Gdx.files.internal("!music.png"))).getDrawable());
             musicOn = false;
-        }else{
+        } else {
             musicButton.setDrawable(new Image(new Texture(Gdx.files.internal("music.png"))).getDrawable());
             musicOn = true;
         }
@@ -130,12 +131,8 @@ public class MenuScreen {
         stage.draw();
     }
 
-    public void dispose(){
+    public void dispose() {
         stage.dispose();
     }
+}
 
-<<<<<<< HEAD
-}
-=======
-}
->>>>>>> ab212b96f62e93087e2e82834bcdb9c68db81c46
