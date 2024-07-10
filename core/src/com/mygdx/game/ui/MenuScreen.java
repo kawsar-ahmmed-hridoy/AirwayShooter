@@ -134,4 +134,8 @@ public class MenuScreen {
         stage.dispose();
     }
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> ab212b96f62e93087e2e82834bcdb9c68db81c46

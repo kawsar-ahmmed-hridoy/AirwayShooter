@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -17,33 +16,30 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class HomeScreen {
-    private Stage stage;
-    private Texture startupBackgroundTexture;
-    private Texture menuBackgroundTexture;
-    private Texture asteroidTexture;
-    private Texture fireTexture;
-    private Image backgroundImage;
-    private Random random;
+    private final Texture startupBackgroundTexture;
+    private final Texture asteroidTexture;
+    private final Texture fireTexture;
+    public Random random;
     private long startTime;
     private int count;
     private boolean menu;
-    private SpriteBatch batch;
-    private BitmapFont font;
+    private final SpriteBatch batch;
+    private final BitmapFont font;
     private static final int AstNum = 20;
     private static final int AstWidth = 20;
     private static final int AstHeight = 20;
-    private Asteroid[] asteroids;
-    private ArrayList<FireEffect> fireEffects;
-    private Music startupMusic;
+    private final Asteroid[] asteroids;
+    private final ArrayList<FireEffect> fireEffects;
+    private final Music startupMusic;
+    private final MenuScreen menuScreen;
 
     public HomeScreen() {
-        stage = new Stage(new ScreenViewport());
+        Stage stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
         batch = new SpriteBatch();
         random = new Random();
 
         startupBackgroundTexture = new Texture(Gdx.files.internal("background1.png"));
-        menuBackgroundTexture = new Texture(Gdx.files.internal("background2.png"));
         asteroidTexture = new Texture(Gdx.files.internal("asteroid.png"));
         fireTexture = new Texture(Gdx.files.internal("fire.png"));
 
@@ -67,23 +63,18 @@ public class HomeScreen {
         fireEffects = new ArrayList<>();
 
         // Creating Home Menu
-        initMenuComponents();
+        menuScreen = new MenuScreen(stage);
     }
 
-    private void initMenuComponents() {
-        backgroundImage = new Image(menuBackgroundTexture);
-        backgroundImage.setFillParent(true);
-        stage.addActor(backgroundImage);
-
-        // buttonsVisible(false);
+    public void render(float delta) {
+        if (!menu) {
+            renderStartup(delta);
+        } else {
+            menuScreen.render(delta);
+        }
     }
 
-    public void render(float chk) {
-        if (!menu) renderStartup(chk);
-        else renderMenu(chk);
-    }
-
-    private void renderStartup(float chk) {
+    private void renderStartup(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
@@ -92,13 +83,13 @@ public class HomeScreen {
 
         // Updating and drawing asteroids
         for (int i = 0; i < AstNum; i++) {
-            asteroids[i].update(chk, asteroids, fireEffects);
+            asteroids[i].update(delta, asteroids, fireEffects);
             batch.draw(asteroidTexture, asteroids[i].x, asteroids[i].y, AstWidth, AstHeight);
         }
 
         // Updating and drawing fire effects
         for (FireEffect ff : fireEffects) {
-            ff.update(chk);
+            ff.update(delta);
             batch.draw(fireTexture, ff.x, ff.y);
         }
 
@@ -108,7 +99,6 @@ public class HomeScreen {
         float textHeight = font.getRegion().getRegionHeight() * font.getData().scaleY;
         float textX = (Gdx.graphics.getWidth() - textWidth + 100) / 2;
         float textY = (Gdx.graphics.getHeight() + textHeight - 650) / 2;
-
         font.draw(batch, loadingText, textX, textY);
         batch.end();
 
@@ -120,37 +110,20 @@ public class HomeScreen {
             startTime = TimeUtils.millis();
             count++;
         }
-
-        // Creating Home Menu after 10 seconds
         if (count > 100 && !menu) {
             menu = true;
-            menuVisible(true);
             startupMusic.stop();
         }
     }
 
-    private void renderMenu(float chk) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        stage.act(chk);
-        stage.draw();
-    }
-
-    private void menuVisible(boolean flag) {
-        backgroundImage.setVisible(flag);
-        // For others visibility.
-    }
-
     public void dispose() {
-        stage.dispose();
+        batch.dispose();
+        font.dispose();
         startupBackgroundTexture.dispose();
-        menuBackgroundTexture.dispose();
         asteroidTexture.dispose();
         fireTexture.dispose();
-        font.dispose();
-        batch.dispose();
         startupMusic.dispose();
+        menuScreen.dispose();
     }
 
     private class Asteroid {
@@ -207,15 +180,13 @@ public class HomeScreen {
         }
     }
 
-    private class FireEffect {
+    private static class FireEffect {
         float x, y, duration;
-
         FireEffect(float x, float y) {
             this.x = x;
             this.y = y;
             this.duration = 1.0f; // Fire effect duration in seconds
         }
-
         void update(float delta) {
             duration -= delta;
         }
