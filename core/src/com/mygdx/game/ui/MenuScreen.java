@@ -7,13 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.Screen;
+import com.mygdx.game.MyGame;
 
-public class MenuScreen {
+public class MenuScreen implements Screen {
     private final Stage stage;
     private final Image instructionImage;
     private final Image musicButton;
     private boolean musicOn;
-    public MenuScreen(Stage stage){
+
+    public MenuScreen(MyGame game, Stage stage){
         this.stage = stage;
 
         //Creating MenuBackground.
@@ -22,7 +25,6 @@ public class MenuScreen {
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
 
-        //Accessing images for button textures.
         Texture instructionTexture = new Texture(Gdx.files.internal("instruction.png"));
         Texture instructionImageTexture = new Texture(Gdx.files.internal("background.png"));
         Texture rocket1Texture = new Texture(Gdx.files.internal("blue_ship.png"));
@@ -111,6 +113,13 @@ public class MenuScreen {
                 toggleMusic();
             }
         });
+
+        playButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new GameScreen(game));
+            }
+        });
     }
 
     private void toggleMusic(){
@@ -123,6 +132,7 @@ public class MenuScreen {
         }
     }
 
+    @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -130,8 +140,29 @@ public class MenuScreen {
         stage.draw();
     }
 
-    public void dispose(){
-        stage.dispose();
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
     }
 
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    @Override
+    public void hide() {
+        Gdx.input.setInputProcessor(null);
+    }
+
+    @Override
+    public void pause() {}
+
+    @Override
+    public void resume() {}
+
+    @Override
+    public void dispose() {
+        stage.dispose();
+    }
 }

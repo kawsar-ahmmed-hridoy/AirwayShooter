@@ -8,21 +8,26 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.Screen;
+import com.mygdx.game.MyGame;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class HomeScreen {
+public class HomeScreen implements Screen {
+    private final Stage stage;
+    private final MyGame game;
     private final Texture startupBackgroundTexture;
     private final Texture asteroidTexture;
     private final Texture fireTexture;
-    public Random random;
+    private final Random random;
     private long startTime;
     private int count;
-    private boolean menu;
+    private boolean menuActive;
     private final SpriteBatch batch;
     private final BitmapFont font;
     private static final int AstNum = 20;
@@ -33,8 +38,9 @@ public class HomeScreen {
     private final Music startupMusic;
     private final MenuScreen menuScreen;
 
-    public HomeScreen() {
-        Stage stage = new Stage(new ScreenViewport());
+    public HomeScreen(MyGame game, Stage stage) {
+        this.game = game;
+        this.stage = stage;
         Gdx.input.setInputProcessor(stage);
         batch = new SpriteBatch();
         random = new Random();
@@ -44,9 +50,9 @@ public class HomeScreen {
         fireTexture = new Texture(Gdx.files.internal("fire.png"));
 
         font = new BitmapFont();
-        startTime = TimeUtils.millis();
+        startTime = System.currentTimeMillis();
         count = 1;
-        menu = false;
+        menuActive = false;
 
         // Loading && playing startup music.
         startupMusic = Gdx.audio.newMusic(Gdx.files.internal("startup.mp3"));
@@ -62,12 +68,28 @@ public class HomeScreen {
         // Creating fire effects
         fireEffects = new ArrayList<>();
 
-        // Creating Home Menu
-        menuScreen = new MenuScreen(stage);
+        // Creating MenuScreen
+        menuScreen = new MenuScreen(game, stage);
+
+        // Adding click listener for transitioning to MenuScreen
+        Image transitionImage = new Image(new Texture(Gdx.files.internal("fire.png")));
+        //transitionImage.setPosition(100, 100);//transitionImage.setSize(100, 50);
+        transitionImage.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                menuActive = true;
+                startupMusic.stop();
+            }
+        });
+        //stage.addActor(transitionImage); No need to add
     }
 
+    @Override
     public void render(float delta) {
-        if (!menu) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (!menuActive) {
             renderStartup(delta);
         } else {
             menuScreen.render(delta);
@@ -75,9 +97,6 @@ public class HomeScreen {
     }
 
     private void renderStartup(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.begin();
         batch.draw(startupBackgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -106,16 +125,42 @@ public class HomeScreen {
         fireEffects.removeIf(fireEffect -> fireEffect.duration <= 0);
 
         // Updating count every 100 milliseconds
-        if (TimeUtils.timeSinceMillis(startTime) > 100) {
-            startTime = TimeUtils.millis();
+        if (System.currentTimeMillis() - startTime > 100) {
+            startTime = System.currentTimeMillis();
             count++;
         }
-        if (count > 100 && !menu) {
-            menu = true;
+
+        // Transition to MenuScreen after 10 seconds
+        if (count > 100 && !menuActive) {
+            menuActive = true;
             startupMusic.stop();
+            game.setScreen(menuScreen);
         }
     }
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+    }
 
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    @Override
+    public void hide() {
+        Gdx.input.setInputProcessor(null);
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
     public void dispose() {
         batch.dispose();
         font.dispose();
@@ -182,11 +227,13 @@ public class HomeScreen {
 
     private static class FireEffect {
         float x, y, duration;
+
         FireEffect(float x, float y) {
             this.x = x;
             this.y = y;
-            this.duration = 1.0f; // Fire effect duration in seconds
+            this.duration = 1.0f;
         }
+
         void update(float delta) {
             duration -= delta;
         }
