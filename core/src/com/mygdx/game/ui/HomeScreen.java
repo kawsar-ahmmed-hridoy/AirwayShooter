@@ -116,7 +116,7 @@ public class HomeScreen {
         fireEffects.removeIf(fireEffect -> fireEffect.duration <= 0);
 
         // Updating count every 100 milliseconds
-        if (TimeUtils.timeSinceMillis(startTime) > 100) {
+        if (TimeUtils.timeSinceMillis(startTime) > 10) {
             startTime = TimeUtils.millis();
             count++;
         }
