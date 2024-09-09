@@ -125,7 +125,6 @@ public class HomeScreen implements Screen {
         // Removing fire effects
         fireEffects.removeIf(fireEffect -> fireEffect.duration <= 0);
 
-        // Updating count every 100 milliseconds
         if (System.currentTimeMillis() - startTime > 100) {
             startTime = System.currentTimeMillis();
             count++;
