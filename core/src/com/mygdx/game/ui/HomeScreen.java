@@ -122,7 +122,6 @@ public class HomeScreen implements Screen {
         font.draw(batch, loadingText, textX, textY);
         batch.end();
 
-        // Removing fire effects
         fireEffects.removeIf(fireEffect -> fireEffect.duration <= 0);
 
         if (System.currentTimeMillis() - startTime > 100) {
