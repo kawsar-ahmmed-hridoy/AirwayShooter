@@ -1,6 +1,7 @@
 package com.mygdx.game.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -12,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.Screen;
 import com.mygdx.game.MyGame;
 
 import java.util.ArrayList;
@@ -31,8 +31,8 @@ public class HomeScreen implements Screen {
     private final SpriteBatch batch;
     private final BitmapFont font;
     private static final int AstNum = 20;
-    private static final int AstWidth = 20;
-    private static final int AstHeight = 20;
+    private static final int AstWidth = 25;
+    private static final int AstHeight = 25;
     private final Asteroid[] asteroids;
     private final ArrayList<FireEffect> fireEffects;
     private final Music startupMusic;
@@ -73,7 +73,8 @@ public class HomeScreen implements Screen {
 
         // Adding click listener for transitioning to MenuScreen
         Image transitionImage = new Image(new Texture(Gdx.files.internal("fire.png")));
-        //transitionImage.setPosition(100, 100);//transitionImage.setSize(100, 50);
+        transitionImage.setPosition(100, 100);
+        transitionImage.setSize(100, 50);
         transitionImage.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -81,7 +82,7 @@ public class HomeScreen implements Screen {
                 startupMusic.stop();
             }
         });
-        //stage.addActor(transitionImage); No need to add
+        //stage.addActor(transitionImage);
     }
 
     @Override
@@ -113,11 +114,11 @@ public class HomeScreen implements Screen {
         }
 
         // Drawing loading text with count
-        String loadingText = "Loading... " + count;
+        String loadingText = "LOADING... " + count;
         float textWidth = font.getRegion().getRegionWidth() * font.getData().scaleX;
         float textHeight = font.getRegion().getRegionHeight() * font.getData().scaleY;
         float textX = (Gdx.graphics.getWidth() - textWidth + 100) / 2;
-        float textY = (Gdx.graphics.getHeight() + textHeight - 650) / 2;
+        float textY = (Gdx.graphics.getHeight() + textHeight - 350) / 2;
         font.draw(batch, loadingText, textX, textY);
         batch.end();
 
