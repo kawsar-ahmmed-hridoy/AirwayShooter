@@ -107,7 +107,6 @@ public class HomeScreen implements Screen {
             batch.draw(asteroidTexture, asteroids[i].x, asteroids[i].y, AstWidth, AstHeight);
         }
 
-        // Updating and drawing fire effects
         for (FireEffect ff : fireEffects) {
             ff.update(delta);
             batch.draw(fireTexture, ff.x, ff.y);
