@@ -113,7 +113,6 @@ public class HomeScreen implements Screen {
             batch.draw(fireTexture, ff.x, ff.y);
         }
 
-        // Drawing loading text with count
         String loadingText = "LOADING... " + count;
         float textWidth = font.getRegion().getRegionWidth() * font.getData().scaleX;
         float textHeight = font.getRegion().getRegionHeight() * font.getData().scaleY;
