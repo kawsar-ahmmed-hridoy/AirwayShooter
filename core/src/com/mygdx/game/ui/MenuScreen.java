@@ -12,28 +12,24 @@ import com.mygdx.game.MyGame;
 
 public class MenuScreen implements Screen {
     private final Stage stage;
-    private int selectedShip = 0; // Default spaceship selected
-    private final Image instructionImage; // Instruction overlay image
-    private final Image musicButton; // Music on/off button
-    private boolean musicOn; // State of the music
+    private int selectedShip = 0;
+    private final Image instructionImage;
+    private final Image musicButton;
+    private boolean musicOn;
 
     public MenuScreen(MyGame game, Stage stage) {
         this.stage = stage;
 
-        // Creating Menu Background.
         Texture menuBackgroundTexture = new Texture(Gdx.files.internal("background2.png"));
         Image backgroundImage = new Image(menuBackgroundTexture);
         backgroundImage.setFillParent(true);
         stage.addActor(backgroundImage);
 
-        // Create textures for the spaceships.
         Texture rocket1Texture = new Texture(Gdx.files.internal("blue_ship.png"));
         Texture rocket2Texture = new Texture(Gdx.files.internal("red_ship.png"));
         Texture rocket3Texture = new Texture(Gdx.files.internal("green_ship.png"));
         Texture rocket4Texture = new Texture(Gdx.files.internal("orange_ship.png"));
 
-        // Set up spaceship selection buttons.
-        // Buttons for spaceship selection
         Image[] rocketButtons = new Image[4];
         rocketButtons[0] = new Image(rocket1Texture);
         rocketButtons[0].setPosition(74, 152);
@@ -44,7 +40,6 @@ public class MenuScreen implements Screen {
         rocketButtons[3] = new Image(rocket4Texture);
         rocketButtons[3].setPosition(127, 215);
 
-        // Adjust button sizes and add listeners for spaceship selection.
         for (int i = 0; i < 4; i++) {
             rocketButtons[i].setWidth(40);
             rocketButtons[i].setHeight(40);
@@ -52,13 +47,12 @@ public class MenuScreen implements Screen {
             rocketButtons[i].addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    selectedShip = index; // Select spaceship
+                    selectedShip = index;
                 }
             });
             stage.addActor(rocketButtons[i]);
         }
 
-        // Creating textures for the rest of the buttons.
         Texture instructionTexture = new Texture(Gdx.files.internal("instruction.png"));
         Texture instructionImageTexture = new Texture(Gdx.files.internal("background.png"));
         Texture exitTexture = new Texture(Gdx.files.internal("exit.png"));
@@ -66,75 +60,67 @@ public class MenuScreen implements Screen {
         Texture musicOnTexture = new Texture(Gdx.files.internal("!music.png"));
         Texture bestScoresTexture = new Texture(Gdx.files.internal("highScore.png"));
 
-        // Creating the Instruction Button.
         Image instructionButton = new Image(instructionTexture);
         instructionButton.setPosition(52, 580);
         instructionButton.setSize(70, 70);
         stage.addActor(instructionButton);
 
-        // Creating the Play Button.
         Image playButton = new Image(playTexture);
         playButton.setPosition(385, 220);
         playButton.setSize(300, 300);
         stage.addActor(playButton);
 
-        // Creating the Exit Button.
         Image exitButton = new Image(exitTexture);
         exitButton.setPosition(448, 80);
         exitButton.setSize(180, 90);
         stage.addActor(exitButton);
 
-        // Creating the Music Button.
         musicButton = new Image(musicOnTexture);
-        musicButton.setPosition(1015, 606);
-        musicButton.setSize(40, 40);
+        musicButton.setPosition(900, 590);
+        musicButton.setSize(60, 60);
         stage.addActor(musicButton);
         musicOn = true;
 
-        // Creating the Best Scores Button.
         Image bestScoresButton = new Image(bestScoresTexture);
         bestScoresButton.setPosition(900, 200);
         bestScoresButton.setSize(120, 30);
         stage.addActor(bestScoresButton);
 
-        // Create Instruction Image (Initially hidden).
         instructionImage = new Image(instructionImageTexture);
         instructionImage.setPosition(140, 90);
         instructionImage.setSize(820, 550);
-        instructionImage.setVisible(false); // Initially hidden
+        instructionImage.setVisible(false);
         stage.addActor(instructionImage);
 
-        // Listeners for the buttons.
         instructionButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                instructionImage.setVisible(!instructionImage.isVisible()); // Toggle visibility
+                instructionImage.setVisible(!instructionImage.isVisible());
             }
         });
 
         exitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit(); // Exit the game
+                Gdx.app.exit();
             }
         });
 
         musicButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                toggleMusic(); // Toggle music on/off
+                toggleMusic();
             }
         });
 
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new GameScreen(game, selectedShip)); // Start the game with selected spaceship
+                game.setScreen(new GameScreen(game, selectedShip));
             }
         });
     }
 
-    // Toggle the music on and off, updating the icon.
     private void toggleMusic() {
         if (musicOn) {
             musicButton.setDrawable(new Image(new Texture(Gdx.files.internal("!music.png"))).getDrawable());

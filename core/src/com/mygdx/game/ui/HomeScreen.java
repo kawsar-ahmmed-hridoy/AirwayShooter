@@ -46,7 +46,7 @@ public class HomeScreen implements Screen {
         random = new Random();
 
         startupBackgroundTexture = new Texture(Gdx.files.internal("background1.png"));
-        asteroidTexture = new Texture(Gdx.files.internal("asteroid.png"));
+        asteroidTexture = new Texture(Gdx.files.internal("homeAstro.png"));
         fireTexture = new Texture(Gdx.files.internal("fire.png"));
 
         font = new BitmapFont();
@@ -54,24 +54,19 @@ public class HomeScreen implements Screen {
         count = 1;
         menuActive = false;
 
-        // Loading && playing startup music.
         startupMusic = Gdx.audio.newMusic(Gdx.files.internal("startup.mp3"));
         startupMusic.setLooping(false);
         startupMusic.play();
 
-        // Creating asteroids
         asteroids = new Asteroid[AstNum];
         for (int i = 0; i < AstNum; i++) {
             asteroids[i] = new Asteroid();
         }
 
-        // Creating fire effects
         fireEffects = new ArrayList<>();
 
-        // Creating MenuScreen
         menuScreen = new MenuScreen(game, stage);
 
-        // Adding click listener for transitioning to MenuScreen
         Image transitionImage = new Image(new Texture(Gdx.files.internal("fire.png")));
         transitionImage.setPosition(100, 100);
         transitionImage.setSize(100, 50);
@@ -82,7 +77,6 @@ public class HomeScreen implements Screen {
                 startupMusic.stop();
             }
         });
-        //stage.addActor(transitionImage);
     }
 
     @Override
@@ -101,7 +95,6 @@ public class HomeScreen implements Screen {
         batch.begin();
         batch.draw(startupBackgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // Updating and drawing asteroids
         for (int i = 0; i < AstNum; i++) {
             asteroids[i].update(delta, asteroids, fireEffects);
             batch.draw(asteroidTexture, asteroids[i].x, asteroids[i].y, AstWidth, AstHeight);
@@ -112,11 +105,11 @@ public class HomeScreen implements Screen {
             batch.draw(fireTexture, ff.x, ff.y);
         }
 
-        String loadingText = "LOADING... " + count;
+        String loadingText = "Loading... " + count;
         float textWidth = font.getRegion().getRegionWidth() * font.getData().scaleX;
         float textHeight = font.getRegion().getRegionHeight() * font.getData().scaleY;
         float textX = (Gdx.graphics.getWidth() - textWidth + 100) / 2;
-        float textY = (Gdx.graphics.getHeight() + textHeight - 350) / 2;
+        float textY = (Gdx.graphics.getHeight()-250 + textHeight - 350) / 2;
         font.draw(batch, loadingText, textX, textY);
         batch.end();
 
@@ -127,7 +120,6 @@ public class HomeScreen implements Screen {
             count++;
         }
 
-        // Transition to MenuScreen after 10 seconds
         if (count > 100 && !menuActive) {
             menuActive = true;
             startupMusic.stop();
@@ -186,7 +178,6 @@ public class HomeScreen implements Screen {
             y += velocityY * delta;
             bounds.setPosition(x, y);
 
-            // Check for collisions with screen boundaries
             if (x < 0 || x + AstWidth > Gdx.graphics.getWidth()) {
                 velocityX = -velocityX;
                 x = MathUtils.clamp(x, 0, Gdx.graphics.getWidth() - AstWidth);
@@ -196,25 +187,20 @@ public class HomeScreen implements Screen {
                 y = MathUtils.clamp(y, 0, Gdx.graphics.getHeight() - AstHeight);
             }
 
-            // Checking collisions with other asteroids
             for (Asteroid other : asteroids) {
                 if (other != this && bounds.overlaps(other.bounds)) {
-                    // Reverse velocities
                     velocityX = -velocityX;
                     velocityY = -velocityY;
                     other.velocityX = -other.velocityX;
                     other.velocityY = -other.velocityY;
 
-                    // Ensuring the asteroids move apart
                     x += velocityX * delta;
                     y += velocityY * delta;
                     other.x += other.velocityX * delta;
                     other.y += other.velocityY * delta;
 
-                    // Creating fire effect at the collision spot
                     fireEffects.add(new FireEffect((x + other.x) / 2, (y + other.y) / 2));
 
-                    // Updating bounds positions
                     bounds.setPosition(x, y);
                     other.bounds.setPosition(other.x, other.y);
                 }

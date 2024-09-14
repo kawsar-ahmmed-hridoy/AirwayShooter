@@ -63,8 +63,8 @@ public class GameScreen implements Screen {
         this.selectedShip = selectedShip;
 
         // Load textures
-        this.backgroundTexture1 = new Texture(Gdx.files.internal("b3.jpg"));
-        this.backgroundTexture2 = new Texture(Gdx.files.internal("b3.jpg"));
+        this.backgroundTexture1 = new Texture(Gdx.files.internal("6.jpg"));
+        this.backgroundTexture2 = new Texture(Gdx.files.internal("6.jpg"));
 
         String[] shipTextures = {
                 "blue_ship.png",
@@ -98,9 +98,9 @@ public class GameScreen implements Screen {
         this.pauseTexture = new Texture(Gdx.files.internal("pauseButton.png"));
         TextureRegionDrawable pauseDrawable = new TextureRegionDrawable(pauseTexture);
         Image pauseButton = new Image(pauseDrawable);
-        float buttonSize = Gdx.graphics.getWidth() * 0.1f;
+        float buttonSize = Gdx.graphics.getWidth() * 0.07f;
         pauseButton.setSize(buttonSize, buttonSize);
-        pauseButton.setPosition(Gdx.graphics.getWidth() - pauseButton.getWidth() - 20, Gdx.graphics.getHeight() - pauseButton.getHeight() - 20);
+        pauseButton.setPosition(Gdx.graphics.getWidth() - pauseButton.getWidth() - 40, Gdx.graphics.getHeight() - 550 - pauseButton.getHeight() - 30);
         stage.addActor(pauseButton);
 
         pauseButton.addListener(new ClickListener() {

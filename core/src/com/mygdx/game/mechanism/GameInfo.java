@@ -38,9 +38,9 @@ public class GameInfo {
 
     public void render() {
         batch.begin();
-        font.draw(batch, "Score: " + score, Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() - 20);
-        font.draw(batch, "Lives: " + lives, Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() - 50);
-        font.draw(batch, "Best Score: " + bestScore, Gdx.graphics.getWidth() * 0.6f, Gdx.graphics.getHeight() - 80);
+        font.draw(batch, "SCORE: " + score, Gdx.graphics.getWidth() * 0.85f, Gdx.graphics.getHeight() - 280);
+        font.draw(batch, "HEALTH: " + lives, Gdx.graphics.getWidth() * 0.85f, Gdx.graphics.getHeight() - 330);
+        font.draw(batch, "BEST SCORE: " + bestScore, Gdx.graphics.getWidth() * 0.85f, Gdx.graphics.getHeight() - 380);
         batch.end();
     }
 }

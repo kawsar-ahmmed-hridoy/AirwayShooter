@@ -33,20 +33,20 @@ public class GameOverScreen implements Screen {
 
         Texture restartTexture = new Texture(Gdx.files.internal("restart.png"));
         Image restartButton = new Image(restartTexture);
-        restartButton.setSize(100, 100);
+        restartButton.setSize(120, 120);
         restartButton.setPosition(492, 315);
         stage.addActor(restartButton);
 
         Texture menuTexture = new Texture(Gdx.files.internal("menuButton.png"));
         Image menuButton = new Image(menuTexture);
-        menuButton.setSize(90, 120);
-        menuButton.setPosition(110, 110);
+        menuButton.setSize(90, 115);
+        menuButton.setPosition(905, 100);
         stage.addActor(menuButton);
 
         Texture quitTexture = new Texture(Gdx.files.internal("quit.png"));
         Image quitButton = new Image(quitTexture);
         quitButton.setSize(90, 90);
-        quitButton.setPosition(905, 115);
+        quitButton.setPosition(110, 125);
         stage.addActor(quitButton);
 
         restartButton.addListener(new ClickListener() {
@@ -73,9 +73,9 @@ public class GameOverScreen implements Screen {
         BitmapFont font = new BitmapFont();
         LabelStyle labelStyle = new LabelStyle(font, Color.WHITE);
 
-        Label scoreLabel = new Label("Score: " + score, labelStyle);
-        scoreLabel.setFontScale(2);
-        scoreLabel.setPosition(490,680);
+        Label scoreLabel = new Label("SCORE: " + score, labelStyle);
+        scoreLabel.setFontScale(1);
+        scoreLabel.setPosition(503,682);
         stage.addActor(scoreLabel);
 
         FileHandle file = Gdx.files.local("bestScores.txt");
@@ -93,9 +93,9 @@ public class GameOverScreen implements Screen {
             file.writeString(Integer.toString(bestScore), false);
         }
 
-        Label bestScoreLabel = new Label("Best Score: " + bestScore, labelStyle);
-        bestScoreLabel.setFontScale(2);
-        bestScoreLabel.setPosition(20,550);
+        Label bestScoreLabel = new Label("BEST SCORE: " + bestScore, labelStyle);
+        bestScoreLabel.setFontScale(1);
+        bestScoreLabel.setPosition(60,550);
         stage.addActor(bestScoreLabel);
     }
 
