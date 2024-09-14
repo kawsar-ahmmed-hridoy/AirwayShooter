@@ -62,9 +62,8 @@ public class GameScreen implements Screen {
         this.stage = new Stage();
         this.selectedShip = selectedShip;
 
-        // Load textures
-        this.backgroundTexture1 = new Texture(Gdx.files.internal("6.jpg"));
-        this.backgroundTexture2 = new Texture(Gdx.files.internal("6.jpg"));
+        this.backgroundTexture1 = new Texture(Gdx.files.internal("background3.jpg"));
+        this.backgroundTexture2 = new Texture(Gdx.files.internal("background3.jpg"));
 
         String[] shipTextures = {
                 "blue_ship.png",
