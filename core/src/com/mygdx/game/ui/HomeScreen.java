@@ -1,6 +1,7 @@
 package com.mygdx.game.ui;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,66 +9,82 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.mygdx.game.MyGame;
 
 import java.util.ArrayList;
 import java.util.Random;
 
-public class HomeScreen {
+public class HomeScreen implements Screen {
+    private final Stage stage;
+    private final MyGame game;
     private final Texture startupBackgroundTexture;
     private final Texture asteroidTexture;
     private final Texture fireTexture;
-    public Random random;
+    private final Random random;
     private long startTime;
     private int count;
-    private boolean menu;
+    private boolean menuActive;
     private final SpriteBatch batch;
     private final BitmapFont font;
     private static final int AstNum = 20;
-    private static final int AstWidth = 20;
-    private static final int AstHeight = 20;
+    private static final int AstWidth = 25;
+    private static final int AstHeight = 25;
     private final Asteroid[] asteroids;
     private final ArrayList<FireEffect> fireEffects;
     private final Music startupMusic;
     private final MenuScreen menuScreen;
 
-    public HomeScreen() {
-        Stage stage = new Stage(new ScreenViewport());
+    public HomeScreen(MyGame game, Stage stage) {
+        this.game = game;
+        this.stage = stage;
         Gdx.input.setInputProcessor(stage);
         batch = new SpriteBatch();
         random = new Random();
 
         startupBackgroundTexture = new Texture(Gdx.files.internal("background1.png"));
-        asteroidTexture = new Texture(Gdx.files.internal("asteroid.png"));
+        asteroidTexture = new Texture(Gdx.files.internal("homeAstro.png"));
         fireTexture = new Texture(Gdx.files.internal("fire.png"));
 
         font = new BitmapFont();
-        startTime = TimeUtils.millis();
+        startTime = System.currentTimeMillis();
         count = 1;
-        menu = false;
+        menuActive = false;
 
-        // Loading && playing startup music.
         startupMusic = Gdx.audio.newMusic(Gdx.files.internal("startup.mp3"));
         startupMusic.setLooping(false);
         startupMusic.play();
 
-        // Creating asteroids
         asteroids = new Asteroid[AstNum];
         for (int i = 0; i < AstNum; i++) {
             asteroids[i] = new Asteroid();
         }
 
-        // Creating fire effects
         fireEffects = new ArrayList<>();
 
-        // Creating Home Menu
-        menuScreen = new MenuScreen(stage);
+        menuScreen = new MenuScreen(game, stage);
+
+        Image transitionImage = new Image(new Texture(Gdx.files.internal("fire.png")));
+        transitionImage.setPosition(100, 100);
+        transitionImage.setSize(100, 50);
+        transitionImage.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                menuActive = true;
+                startupMusic.stop();
+            }
+        });
     }
 
+    @Override
     public void render(float delta) {
-        if (!menu) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        if (!menuActive) {
             renderStartup(delta);
         } else {
             menuScreen.render(delta);
@@ -75,47 +92,64 @@ public class HomeScreen {
     }
 
     private void renderStartup(float delta) {
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         batch.begin();
         batch.draw(startupBackgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // Updating and drawing asteroids
         for (int i = 0; i < AstNum; i++) {
             asteroids[i].update(delta, asteroids, fireEffects);
             batch.draw(asteroidTexture, asteroids[i].x, asteroids[i].y, AstWidth, AstHeight);
         }
 
-        // Updating and drawing fire effects
         for (FireEffect ff : fireEffects) {
             ff.update(delta);
             batch.draw(fireTexture, ff.x, ff.y);
         }
 
-        // Drawing loading text with count
         String loadingText = "Loading... " + count;
         float textWidth = font.getRegion().getRegionWidth() * font.getData().scaleX;
         float textHeight = font.getRegion().getRegionHeight() * font.getData().scaleY;
         float textX = (Gdx.graphics.getWidth() - textWidth + 100) / 2;
-        float textY = (Gdx.graphics.getHeight() + textHeight - 650) / 2;
+        float textY = (Gdx.graphics.getHeight()-250 + textHeight - 350) / 2;
         font.draw(batch, loadingText, textX, textY);
         batch.end();
 
-        // Removing fire effects
         fireEffects.removeIf(fireEffect -> fireEffect.duration <= 0);
 
-        // Updating count every 100 milliseconds
-        if (TimeUtils.timeSinceMillis(startTime) > 10) {
-            startTime = TimeUtils.millis();
+        if (System.currentTimeMillis() - startTime > 100) {
+            startTime = System.currentTimeMillis();
             count++;
         }
-        if (count > 100 && !menu) {
-            menu = true;
+
+        if (count > 100 && !menuActive) {
+            menuActive = true;
             startupMusic.stop();
+            game.setScreen(menuScreen);
         }
     }
+    @Override
+    public void resize(int width, int height) {
+        stage.getViewport().update(width, height, true);
+    }
 
+    @Override
+    public void show() {
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    @Override
+    public void hide() {
+        Gdx.input.setInputProcessor(null);
+    }
+
+    @Override
+    public void pause() {
+    }
+
+    @Override
+    public void resume() {
+    }
+
+    @Override
     public void dispose() {
         batch.dispose();
         font.dispose();
@@ -144,7 +178,6 @@ public class HomeScreen {
             y += velocityY * delta;
             bounds.setPosition(x, y);
 
-            // Check for collisions with screen boundaries
             if (x < 0 || x + AstWidth > Gdx.graphics.getWidth()) {
                 velocityX = -velocityX;
                 x = MathUtils.clamp(x, 0, Gdx.graphics.getWidth() - AstWidth);
@@ -154,25 +187,20 @@ public class HomeScreen {
                 y = MathUtils.clamp(y, 0, Gdx.graphics.getHeight() - AstHeight);
             }
 
-            // Checking collisions with other asteroids
             for (Asteroid other : asteroids) {
                 if (other != this && bounds.overlaps(other.bounds)) {
-                    // Reverse velocities
                     velocityX = -velocityX;
                     velocityY = -velocityY;
                     other.velocityX = -other.velocityX;
                     other.velocityY = -other.velocityY;
 
-                    // Ensuring the asteroids move apart
                     x += velocityX * delta;
                     y += velocityY * delta;
                     other.x += other.velocityX * delta;
                     other.y += other.velocityY * delta;
 
-                    // Creating fire effect at the collision spot
                     fireEffects.add(new FireEffect((x + other.x) / 2, (y + other.y) / 2));
 
-                    // Updating bounds positions
                     bounds.setPosition(x, y);
                     other.bounds.setPosition(other.x, other.y);
                 }
@@ -182,11 +210,13 @@ public class HomeScreen {
 
     private static class FireEffect {
         float x, y, duration;
+
         FireEffect(float x, float y) {
             this.x = x;
             this.y = y;
-            this.duration = 1.0f; // Fire effect duration in seconds
+            this.duration = 1.0f;
         }
+
         void update(float delta) {
             duration -= delta;
         }
